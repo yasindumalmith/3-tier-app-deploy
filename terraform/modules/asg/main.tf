@@ -8,7 +8,7 @@ resource "aws_launch_template" "web" {
   vpc_security_group_ids = [var.web_sg_id]
   key_name               = var.key_name
 
-  user_data = base64encode(replace(base64decode(var.web_user_data_base64), "__APP_ALB_DNS__", var.app_alb_dns_name))
+  user_data = base64encode(replace(base64decode(var.web_user_data_base64), "__APP_ALB_DNS__", module.alb.web_alb_dns_name))
 
   monitoring {
     enabled = true
@@ -121,7 +121,7 @@ resource "aws_launch_template" "app" {
     name = aws_iam_instance_profile.app_profile.name
   }
 
-  user_data = base64encode(replace(base64decode(var.app_user_data_base64), "__APP_ALB_DNS__", var.app_alb_dns_name))
+  user_data = base64encode(replace(base64decode(var.app_user_data_base64), "__APP_ALB_DNS__", module.alb.app_alb_dns_name))
 
   monitoring {
     enabled = true

@@ -49,7 +49,7 @@ resource "aws_lb_listener" "app_listener" {
 
 resource "aws_lb_listener" "alb_listener_app" {
   load_balancer_arn = aws_lb.alb_app.id
-  port              = 8080
+  port              = 8081
   protocol          = "HTTP"
 
   default_action {
