@@ -29,7 +29,7 @@ resource "aws_internet_gateway" "igw" {
 
 resource "aws_subnet" "alb_subnet_public" {
 
-  count = 3
+  count = length(var.public_subnets)
 
   vpc_id                  = aws_vpc.main.id
   cidr_block              = var.public_subnets[count.index]
@@ -45,7 +45,7 @@ resource "aws_subnet" "alb_subnet_public" {
 
 resource "aws_subnet" "web_private" {
 
-  count = 3
+  count = length(var.web_private_subnets)
 
   vpc_id            = aws_vpc.main.id
   cidr_block        = var.web_private_subnets[count.index]
@@ -60,7 +60,7 @@ resource "aws_subnet" "web_private" {
 
 resource "aws_subnet" "app_private" {
 
-  count = 3
+  count = length(var.app_private_subnets)
 
   vpc_id            = aws_vpc.main.id
   cidr_block        = var.app_private_subnets[count.index]
@@ -75,7 +75,7 @@ resource "aws_subnet" "app_private" {
 
 resource "aws_subnet" "db_private" {
 
-  count = 3
+  count = length(var.db_private_subnets)
 
   vpc_id            = aws_vpc.main.id
   cidr_block        = var.db_private_subnets[count.index]
@@ -96,7 +96,6 @@ resource "aws_eip" "nat_eip" {
 # NAT gateway
 
 resource "aws_nat_gateway" "nat" {
-
   allocation_id = aws_eip.nat_eip.id
   subnet_id     = aws_subnet.alb_subnet_public[0].id
 
@@ -160,7 +159,7 @@ resource "aws_route_table" "db_private_rt" {
 
 resource "aws_route_table_association" "alb_public_assoc" {
 
-  count = 3
+  count = length(var.public_subnets)
 
   subnet_id      = aws_subnet.alb_subnet_public[count.index].id
   route_table_id = aws_route_table.alb_public_rt.id
@@ -170,7 +169,7 @@ resource "aws_route_table_association" "alb_public_assoc" {
 
 resource "aws_route_table_association" "web_assoc" {
 
-  count = 3
+  count = length(var.web_private_subnets)
 
   subnet_id      = aws_subnet.web_private[count.index].id
   route_table_id = aws_route_table.web_private_rt.id
@@ -180,7 +179,7 @@ resource "aws_route_table_association" "web_assoc" {
 
 resource "aws_route_table_association" "app_assoc" {
 
-  count = 3
+  count = length(var.app_private_subnets)
 
   subnet_id      = aws_subnet.app_private[count.index].id
   route_table_id = aws_route_table.app_private_rt.id
@@ -190,7 +189,7 @@ resource "aws_route_table_association" "app_assoc" {
 
 resource "aws_route_table_association" "db_assoc" {
 
-  count = 3
+  count = length(var.db_private_subnets)
 
   subnet_id      = aws_subnet.db_private[count.index].id
   route_table_id = aws_route_table.db_private_rt.id
