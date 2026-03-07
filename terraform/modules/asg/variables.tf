@@ -69,3 +69,19 @@ variable "sns_topic_arn" {
   description = "SNS topic ARN for ASG notifications"
   type        = string
 }
+
+variable "db_endpoint" {
+  description = "RDS endpoint to inject into App user data"
+  type        = string
+}
+
+variable "db_username" {
+  description = "Database username to inject into App user data"
+  type        = string
+}
+
+variable "db_password" {
+  description = "Database password to inject into App user data"
+  type        = string
+  sensitive   = true
+}

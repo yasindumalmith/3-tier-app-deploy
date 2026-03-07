@@ -105,6 +105,9 @@ module "asg" {
   web_target_group_arn = module.alb.web_target_group_arn
   app_target_group_arn = module.alb.app_target_group_arn
   sns_topic_arn        = var.sns_topic_arn
+  db_endpoint          = module.rds.db_endpoint
+  db_username          = var.db_username
+  db_password          = var.db_password
 }
 
 
