@@ -70,15 +70,15 @@ module "rds" {
   db_allocated_storage = var.db_allocated_storage
 }
 
-module "secret" {
-  source = "./modules/seceret"
+# module "secret" {
+#   source = "./modules/seceret"
 
-  secret_name = "${var.project_name}-db-secret-${random_string.suffix.result}"
-  db_username = var.db_username
-  db_password = var.db_password
-  db_endpoint = module.rds.db_endpoint
-  db_name     = module.rds.db_name
-}
+#   secret_name = "${var.project_name}-db-secret-${random_string.suffix.result}"
+#   db_username = var.db_username
+#   db_password = var.db_password
+#   db_endpoint = module.rds.db_endpoint
+#   db_name     = module.rds.db_name
+# }
 
 resource "random_string" "suffix" {
   length  = 6

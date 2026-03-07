@@ -62,45 +62,45 @@ resource "aws_autoscaling_group" "web" {
 
 # App IAM role for Secrets Manager access
 
-resource "aws_iam_role" "app_role" {
-  name = "app_role_${var.project_name}"
+#resource "aws_iam_role" "app_role" {
+#  name = "app_role_${var.project_name}"
 
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = "sts:AssumeRole"
-        Effect = "Allow"
-        Principal = {
-          Service = "ec2.amazonaws.com"
-        }
-      }
-    ]
-  })
-}
+#  assume_role_policy = jsonencode({
+#    Version = "2012-10-17"
+#    Statement = [
+#      {
+#        Action = "sts:AssumeRole"
+#        Effect = "Allow"
+#        Principal = {
+#          Service = "ec2.amazonaws.com"
+#        }
+#      }
+#    ]
+#  })
+#}
 
-resource "aws_iam_policy" "secrets_policy" {
-  name        = "secrets_policy_${var.project_name}"
-  description = "Allow access to secrets manager"
+# resource "aws_iam_policy" "secrets_policy" {
+#  name        = "secrets_policy_${var.project_name}"
+#  description = "Allow access to secrets manager"
 
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = [
-          "secretsmanager:GetSecretValue"
-        ]
-        Effect   = "Allow"
-        Resource = "*"
-      }
-    ]
-  })
-}
+#  policy = jsonencode({
+#    Version = "2012-10-17"
+#    Statement = [
+#      {
+#        Action = [
+#          "secretsmanager:GetSecretValue"
+#        ]
+#        Effect   = "Allow"
+#        Resource = "*"
+#      }
+#    ]
+#  })
+#}
 
-resource "aws_iam_role_policy_attachment" "secrets_attach" {
-  role       = aws_iam_role.app_role.name
-  policy_arn = aws_iam_policy.secrets_policy.arn
-}
+#resource "aws_iam_role_policy_attachment" "secrets_attach" {
+#  role       = aws_iam_role.app_role.name
+#  policy_arn = aws_iam_policy.secrets_policy.arn
+#}
 
 resource "aws_iam_instance_profile" "app_profile" {
   name = "app_profile_${var.project_name}"
@@ -121,7 +121,7 @@ resource "aws_launch_template" "app" {
     name = aws_iam_instance_profile.app_profile.name
   }
 
-  user_data = base64encode(replace(base64decode(var.app_user_data_base64), "__APP_ALB_DNS__", module.alb.app_alb_dns_name))
+  user_data = base64encode(replace(base64decode(var.app_user_data_base64), "__DB_ENDPOINT__", module.rds.db_endpoint))
 
   monitoring {
     enabled = true
