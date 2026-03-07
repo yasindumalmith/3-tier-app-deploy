@@ -38,3 +38,43 @@ variable "db_private_subnets" {
   description = "Database Private subnet CIDR blocks"
   type        = list(string)
 }
+
+
+variable "bastion_ami" {
+  description = "AMI ID for the Bastion Host"
+  type        = string
+}
+
+variable "bastion_instance_type" {
+  description = "Instance type for the Bastion Host"
+  type        = string
+  default     = "t2.micro"
+}
+
+variable "key_name" {
+  description = "Name of the SSH key pair to access the Bastion Host"
+  type        = string
+}
+
+variable "db_username" {
+  description = "Database master username"
+  type        = string
+}
+
+variable "db_password" {
+  description = "Database master password"
+  type        = string
+  sensitive   = true
+}
+
+variable "db_instance_class" {
+  description = "The instance type of the RDS instance"
+  type        = string
+  default     = "db.t3.micro"
+}
+
+variable "db_allocated_storage" {
+  description = "The allocated storage in gigabytes"
+  type        = number
+  default     = 20
+}
