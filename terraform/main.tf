@@ -4,6 +4,10 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 5.0"
     }
+    random = {
+      source  = "hashicorp/random"
+      version = "~> 3.0"
+    }
   }
 }
 
@@ -57,12 +61,13 @@ module "alb" {
 module "rds" {
   source = "./modules/rds"
 
-  project_name      = var.project_name
-  db_subnets        = module.vpc.db_private_subnets
-  db_sg_id          = module.sg.db_sg_id
-  db_username       = var.db_username
-  db_password       = var.db_password
-  db_instance_class = var.db_instance_class
+  project_name         = var.project_name
+  db_subnets           = module.vpc.db_private_subnets
+  db_sg_id             = module.sg.db_sg_id
+  db_username          = var.db_username
+  db_password          = var.db_password
+  db_instance_class    = var.db_instance_class
+  db_allocated_storage = var.db_allocated_storage
 }
 
 module "secret" {
@@ -80,3 +85,26 @@ resource "random_string" "suffix" {
   special = false
   upper   = false
 }
+
+module "asg" {
+  source = "./modules/asg"
+
+  project_name         = var.project_name
+  web_image_id         = var.web_image_id
+  web_instance_type    = var.web_instance_type
+  web_sg_id            = module.sg.web_sg_id
+  web_user_data_base64 = var.web_user_data_base64
+  key_name             = var.key_name
+  web_private_subnets  = module.vpc.web_private_subnets
+  app_image_id         = var.app_image_id
+  app_instance_type    = var.app_instance_type
+  app_sg_id            = module.sg.app_sg_id
+  app_user_data_base64 = var.app_user_data_base64
+  app_private_subnets  = module.vpc.app_private_subnets
+  app_alb_dns_name     = module.alb.app_alb_dns_name
+  web_target_group_arn = module.alb.web_target_group_arn
+  app_target_group_arn = module.alb.app_target_group_arn
+  sns_topic_arn        = var.sns_topic_arn
+}
+
+

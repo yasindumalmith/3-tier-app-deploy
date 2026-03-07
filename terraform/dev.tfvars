@@ -12,3 +12,12 @@ key_name              = "my-key"
 db_username           = "yasindu"
 db_password           = "yasindusql"
 db_instance_class     = "db.t3.micro"
+db_allocated_storage  = 20
+sns_topic_arn         = "arn:aws:sns:us-east-1:123456789012:my-topic"
+web_image_id          = "ami-04b70fa74e45c3917" # Ubuntu 24.04 LTS in us-east-1
+web_instance_type     = "t2.micro"
+app_image_id          = "ami-04b70fa74e45c3917" # Ubuntu 24.04 LTS in us-east-1
+app_instance_type     = "t2.micro"
+web_user_data_base64  = "IyEvYmluL2Jhc2gKZWNobyAnV2ViIHNlcnZlciBydW5uaW5nJyA+IC90bXAvd2ViLnR4dAo="
+app_user_data_base64  = "IyEvYmluL2Jhc2gKZWNobyAnQXBwIHNlcnZlciBydW5uaW5nJyA+IC90bXAvYXBwLnR4dAo="
+

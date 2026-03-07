@@ -78,3 +78,53 @@ variable "db_allocated_storage" {
   type        = number
   default     = 20
 }
+
+variable "web_image_id" {
+  description = "AMI ID for the Web Server"
+  type        = string
+}
+
+variable "web_instance_type" {
+  description = "Instance type for the Web Server"
+  type        = string
+  default     = "t2.micro"
+}
+
+#variable "web_sg_id" {
+#  description = "Security group ID for the Web Server"
+#  type        = string
+#}
+
+variable "web_user_data_base64" {
+  description = "User data for the Web Server"
+  type        = string
+}
+
+variable "app_image_id" {
+  description = "AMI ID for the App Server"
+  type        = string
+}
+
+variable "app_instance_type" {
+  description = "Instance type for the App Server"
+  type        = string
+  default     = "t2.micro"
+}
+
+#variable "app_sg_id" {
+#  description = "Security group ID for the App Server"
+#  type        = string
+#}
+
+variable "app_user_data_base64" {
+  description = "User data for the App Server"
+  type        = string
+}
+
+variable "sns_topic_arn" {
+  description = "SNS topic ARN for notifications"
+  type        = string
+}
+
+
+
