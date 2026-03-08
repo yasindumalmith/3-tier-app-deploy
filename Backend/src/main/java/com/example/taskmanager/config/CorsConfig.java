@@ -13,9 +13,14 @@ public class CorsConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                // Allow all origins for development
                 registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:5173", "http://localhost:3000", "http://127.0.0.1:5173")
+                        // allowedOrigins වෙනුවට allowedOriginPatterns භාවිතා කරන්න
+                        .allowedOriginPatterns(
+                            "http://localhost:5173", 
+                            "http://localhost:3000", 
+                            "http://127.0.0.1:5173",
+                            "http://alb-web-*.elb.amazonaws.com" // ඔබේ AWS Frontend ALB එකට අවසර දීම
+                        )
                         .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
                         .allowCredentials(true);

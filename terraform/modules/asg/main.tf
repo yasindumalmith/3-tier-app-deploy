@@ -8,10 +8,15 @@ resource "aws_launch_template" "web" {
   vpc_security_group_ids = [var.web_sg_id]
   key_name               = var.key_name
 
-  user_data = base64encode(replace(base64decode(var.web_user_data_base64), "__APP_ALB_DNS__", var.app_alb_dns_name))
+  user_data = base64encode(replace(file("${path.root}/../web_startup.sh"), "__REPLACE_ME_ALB_DNS__", var.app_alb_dns_name))
+
 
   monitoring {
     enabled = true
+  }
+
+  iam_instance_profile {
+    name = aws_iam_instance_profile.app_profile.name
   }
 
   tag_specifications {
@@ -31,7 +36,7 @@ resource "aws_autoscaling_group" "web" {
   min_size                  = 2
   max_size                  = 5
   desired_capacity          = 2
-  health_check_type         = "ELB"
+  health_check_type         = "EC2"
   health_check_grace_period = 300
 
   launch_template {
@@ -60,24 +65,53 @@ resource "aws_autoscaling_group" "web" {
   }
 }
 
-# App IAM role for Secrets Manager access
+# S3 access policy
+resource "aws_iam_policy" "s3_access_policy" {
+  name        = "s3_access_policy_${var.project_name}"
+  description = "Allow EC2 to sync from S3"
 
-#resource "aws_iam_role" "app_role" {
-#  name = "app_role_${var.project_name}"
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "s3:GetObject",
+          "s3:ListBucket"
+        ]
+        Effect = "Allow"
+        Resource = [
+          "arn:aws:s3:::3-tier-s3-bucket-yasa",
+          "arn:aws:s3:::3-tier-s3-bucket-yasa/*"
+        ]
+      }
+    ]
+  })
+}
 
-#  assume_role_policy = jsonencode({
-#    Version = "2012-10-17"
-#    Statement = [
-#      {
-#        Action = "sts:AssumeRole"
-#        Effect = "Allow"
-#        Principal = {
-#          Service = "ec2.amazonaws.com"
-#        }
-#      }
-#    ]
-#  })
-#}
+# attach policy to role
+resource "aws_iam_role_policy_attachment" "s3_attach" {
+  role       = aws_iam_role.app_role.name
+  policy_arn = aws_iam_policy.s3_access_policy.arn
+}
+
+# 
+
+resource "aws_iam_role" "app_role" {
+  name = "app_role_${var.project_name}"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+      }
+    ]
+  })
+}
 
 # resource "aws_iam_policy" "secrets_policy" {
 #  name        = "secrets_policy_${var.project_name}"
@@ -102,10 +136,10 @@ resource "aws_autoscaling_group" "web" {
 #  policy_arn = aws_iam_policy.secrets_policy.arn
 #}
 
-#resource "aws_iam_instance_profile" "app_profile" {
-#  name = "app_profile_${var.project_name}"
-#  role = aws_iam_role.app_role.name
-#}
+resource "aws_iam_instance_profile" "app_profile" {
+  name = "app_profile_${var.project_name}"
+  role = aws_iam_role.app_role.name
+}
 
 # app launch template
 resource "aws_launch_template" "app" {
@@ -121,7 +155,7 @@ resource "aws_launch_template" "app" {
     replace(
       replace(
         replace(
-          base64decode(var.app_user_data_base64),
+          file("${path.root}/../app_startup.sh"),
           "__DB_ENDPOINT__", var.db_endpoint
         ),
         "__DB_USER__", var.db_username
@@ -132,6 +166,10 @@ resource "aws_launch_template" "app" {
 
   monitoring {
     enabled = true
+  }
+
+  iam_instance_profile {
+    name = aws_iam_instance_profile.app_profile.name
   }
 
   tag_specifications {
@@ -151,7 +189,7 @@ resource "aws_autoscaling_group" "app" {
   min_size                  = 2
   max_size                  = 5
   desired_capacity          = 2
-  health_check_type         = "ELB"
+  health_check_type         = "EC2"
   health_check_grace_period = 300
 
   launch_template {

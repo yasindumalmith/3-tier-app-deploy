@@ -1,9 +1,10 @@
 import axios from "axios";
 
-const API_BASE_URL = "http://__APP_ALB_DNS__/api";
+const API_BASE_URL = "/api";
 
 const api = axios.create({
     baseURL: API_BASE_URL,
+    withCredentials: true,
     headers: {
         "Content-Type": "application/json",
     },
