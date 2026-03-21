@@ -29,7 +29,7 @@ Traffic flow:
 
 ## Architecture Diagram
 
-![Architecture Diagram](./3-tier architecture.png)
+![Architecture Diagram](./3-Tier_Architecture.png)
 
 ---
 
